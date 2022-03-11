@@ -57,7 +57,8 @@
 
   Transaction is the basic atomic of work submitted by the user to be included in the next block. A wallet address is like a bank account. A wallet address is used to send transactions to one another. Before the network validates a transaction, you need a signature. A signature is needed to sign a transaction before including it in the network. After the transaction is signed, it’s included in the mempool. This is where all transactions wait until miners validate that transaction. The network to which the nodes belong to are distributed in nature. Everyone is able to download a copy of the blockchain. There is no centralized ownership of information. Allows the network to determine which transactions are valid. Consensus is a way to create a voting mechanism. Once the network agrees a transaction, a hashed is assigned and placed in a block. Hashing is a process of generating a digital fingerprint. It’s donde through passing data through a passing function. If information changes, the hash will change as well, which invalidates the block. A block is a container of a list of transactions to be added to the block chain. These blocks are linked together using hash values into what we called block chain. Blockchain is a shared ledger in which blocks are linked together. This allows us to see which transactions are valid or not.
 
-​
+![image](https://user-images.githubusercontent.com/3300958/157954809-f5388011-908b-4f5b-9a53-beb1f694d78f.png)
+
 
 - ¿Qué es Ethereum? ¿Qué es Ethereum Virtual Machine (EVM)?
 
