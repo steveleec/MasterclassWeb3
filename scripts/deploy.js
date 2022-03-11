@@ -14,18 +14,19 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
+  const busdAddress = "0xAEBff8F209a895b22B1F87714319B12C3d12ACf6";
   const LudikToken = await hre.ethers.getContractFactory("LudikToken");
-  const ludikToken = await LudikToken.deploy();
+  const ludikToken = await LudikToken.deploy(busdAddress);
 
   var tx = await ludikToken.deployed();
   console.log("LudikToken deployed to:", ludikToken.address);
   // console.log("Waiting for confirmations");
   // await tx.deployTransaction.wait(5);
-  return;
+
   try {
     await hre.run("verify:verify", {
       address: ludikToken.address,
-      constructorArguments: [],
+      constructorArguments: [busdAddress],
     });
   } catch (error) {
     console.error("Error veryfing contract", error);
