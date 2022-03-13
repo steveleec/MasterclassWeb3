@@ -28,8 +28,16 @@ module.exports = {
       gas: "auto",
       gasPrice: "auto",
     },
+    bsctestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      chainId: 97,
+      accounts: [process.env.PRIVATE_KEY_WALLET_METAMASK],
+      gas: 50000,
+      gasPrice: "auto",
+      timeout: 800000,
+    },
   },
   etherscan: {
-    apiKey: process.env.API_KEY_ETHERSCAN,
+    apiKey: process.env.BSCSCAN_API_KEY,
   },
 };
