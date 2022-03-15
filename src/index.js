@@ -5,7 +5,7 @@ import busdTokenABI from "./abiBUSD";
 
 // Ludik Token
 import ludikTokenABI from "./abi";
-var addressLudikToken = "0xac3136DF37237b4767AC4e4D97F9D07Ae5A5B7B9";
+var addressLudikToken = "0x4E6E5451A55516168307Bd4F40197786c5eCcB4c";
 var addressBusdToken = "0xAEBff8F209a895b22B1F87714319B12C3d12ACf6";
 var account, signer, provider, contractLudik, contractBUSD;
 
@@ -23,6 +23,10 @@ async function getContractInfo() {
 
 function setUpListeners() {
   // Connectar a metamask
+  ethereum.on("accountsChanged", (accounts) => console.log(accounts));
+  ethereum.on("connect", (connectInfo) => console.log(connectInfo));
+  ethereum.on("chainChanged", (connectInfo) => console.log(connectInfo));
+
   var bttn = document.getElementById("connect");
   bttn.addEventListener("click", async function () {
     if (window.ethereum) {
@@ -52,11 +56,19 @@ function setUpListeners() {
   });
 }
 
+function setUpEventListeners() {
+  contractLudik.on("Transfer", (from, to, amount) => {
+    console.log(from, to, amount.toString());
+  });
+}
+
 async function getComponent() {
+  console.log("hello 6");
   // Metamask
   createContractInstance();
   await getContractInfo();
   setUpListeners();
+  setUpEventListeners();
 }
 
 getComponent()

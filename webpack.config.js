@@ -5,6 +5,10 @@ module.exports = {
   devtool: "eval-source-map",
   mode: "development",
   entry: "./src/index.js",
+  devServer: {
+    static: "./dist",
+    hot: true,
+  },
   plugins: [
     new HtmlWebpackPlugin({
       title: "Interacting with smart contract",
