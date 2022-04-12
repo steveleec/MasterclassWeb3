@@ -1,27 +1,27 @@
 import { BigNumber, Contract, providers } from "ethers";
 
-import busdTokenAbi from "./abiBUSD";
-import abi from "./abi";
+import {
+  approveBusd,
+  init,
+  purchaseGuineaPigWithBusd,
+  purchaseLandWithBusd,
+  getListOfNftsPerAccount,
+  getGuineaPigData,
+  getLandData,
+  balanceOf,
+  totalSupply,
+  tokenURI,
+  getWalletData,
+} from "pachacuy-sc";
 
-var addressLudikToken = "0xF3e5633F426c87b20c02fc32F1b72812603FE92F";
-var addressBusdToken = "0xAE078F6E349B6C033A39fD5947f83b1A78A0eC41";
-var provider, account, contractLudik, contractBUSD, signer;
-
-function createContractIntance() {
-  provider = new providers.Web3Provider(window.ethereum);
-  contractLudik = new Contract(addressLudikToken, abi, provider);
-  contractBUSD = new Contract(addressBusdToken, busdTokenAbi, provider);
-}
-
-async function getContractInfo() {
-  console.log("Nombre del token:", await contractLudik.name());
-  console.log("Símbolo del SC:", await contractLudik.symbol());
-}
+var provider, account, signer;
 
 function setUpListeners() {
   var bttn = document.getElementById("connect");
   bttn.addEventListener("click", async function () {
     if (window.ethereum) {
+      provider = new providers.Web3Provider(window.ethereum);
+
       [account] = await ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -34,30 +34,109 @@ function setUpListeners() {
   bttn.addEventListener("click", async function () {
     var valorCajaTexto = document.getElementById("approveAmount").value;
     var value = BigNumber.from(`${valorCajaTexto}000000000000000000`);
-    await contractBUSD.connect(signer).approve(addressLudikToken, value);
+    await approveBusd(value, signer);
   });
 
-  var bttn = document.getElementById("purchaseButton");
+  var bttn = document.getElementById("purchaseGuineaPigButton");
   bttn.addEventListener("click", async function () {
-    var valorCajaTexto = document.getElementById("purchaseAmount").value;
-    var value = BigNumber.from(`${valorCajaTexto}000000000000000000`);
-    console.log(signer);
-    var tx = await contractLudik.connect(signer).purchaseTokensWithBUSD(value);
-    console.log(tx);
+    var value = document.getElementById("purchaseGuineaPig").value;
+    await purchaseGuineaPigWithBusd(value, signer);
+  });
+
+  var bttn = document.getElementById("purchaseGuineaLndButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("purchaseGuineaLnd").value;
+    await purchaseLandWithBusd(value, signer);
+  });
+
+  var bttn = document.getElementById("listOfNftButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("listOfNft").value;
+    var list = await getListOfNftsPerAccount(value);
+    console.log(list);
+  });
+
+  var bttn = document.getElementById("guineaPigDataButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("guineaPigData").value;
+    var data = await getGuineaPigData(value);
+    console.log(data);
+  });
+
+  var bttn = document.getElementById("landDataButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("landData").value;
+    var landData = await getLandData(value);
+    console.log(landData);
+  });
+
+  var bttn = document.getElementById("tokenURIButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("tokenURI").value;
+    var uri = await tokenURI(value);
+    console.log(uri);
+  });
+
+  var bttn = document.getElementById("walletDataButton");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("walletData").value;
+    var walletData = await getWalletData(value);
+    console.log(walletData);
+  });
+
+  var bttn = document.getElementById("balanceOfButton");
+  bttn.addEventListener("click", async function () {
+    var value1 = document.getElementById("balanceOf1").value;
+    var value2 = document.getElementById("balanceOf2").value;
+    var balance = await balanceOf(value1, value2);
+    console.log(balance.toString());
   });
 }
 
-function setUpEventListener() {
-  contractLudik.on("Transfer", (from, to, amount) =>
-    console.log(from, to, amount)
+async function initSmartContracts() {
+  // _account, price, _guineaPigId, _uuid, _raceAndGender
+  // _account, price, _ix, custodianWallet
+  var [NFT, PurhcaseContract] = await init(window.ethereum);
+  PurhcaseContract.on(
+    "GuineaPigPurchaseFinish",
+    (_account, price, _guineaPigId, _uuid, _raceAndGender) => {
+      console.log(" === GuineaPigPurchaseFinish ===");
+      console.log("_account", _account);
+      console.log("price", price.toString());
+      console.log("_guineaPigId", _guineaPigId.toNumber());
+      console.log("_uuid", _uuid.toString());
+      console.log("_raceAndGender", _raceAndGender);
+    }
+  );
+
+  PurhcaseContract.on(
+    "GuineaPigPurchaseInit",
+    (_account, price, _ix, custodianWallet) => {
+      console.log(" === GuineaPigPurchaseInit ===");
+      console.log("_account", _account);
+      console.log("price", price.toString());
+      console.log("_ix", _ix.toNumber());
+      console.log("custodianWallet", custodianWallet);
+    }
+  );
+
+  PurhcaseContract.on(
+    "PurchaseLand",
+    (_account, uuid, landPrice, _location, custodianWallet) => {
+      console.log(" === PurchaseLand ===");
+      console.log("_account", _account);
+      console.log("uuid", uuid.toString());
+      console.log("landPrice", landPrice.toString());
+      console.log("_location", _location.toString());
+      console.log("custodianWallet", custodianWallet);
+    }
   );
 }
 
 async function setUp() {
-  createContractIntance();
-  await getContractInfo();
+  // init pachacuy-sc library
   setUpListeners();
-  setUpEventListener();
+  await initSmartContracts();
 }
 
 setUp()
