@@ -2,6 +2,7 @@ import { BigNumber, Contract, providers } from "ethers";
 
 import {
   approveBusd,
+  allowance,
   init,
   purchaseGuineaPigWithBusd,
   purchaseLandWithBusd,
@@ -20,21 +21,29 @@ function setUpListeners() {
   var bttn = document.getElementById("connect");
   bttn.addEventListener("click", async function () {
     if (window.ethereum) {
-      provider = new providers.Web3Provider(window.ethereum);
-
       [account] = await ethereum.request({
         method: "eth_requestAccounts",
       });
       console.log("Billetera metamask", account);
+
+      provider = new providers.Web3Provider(window.ethereum);
       signer = provider.getSigner(account);
     }
+  });
+
+  var bttn = document.getElementById("allowanceButton");
+  bttn.addEventListener("click", async function () {
+    var wallet = document.getElementById("allowanceAmount").value;
+    var _allowance = await allowance(wallet);
+    console.log(_allowance.toString());
   });
 
   var bttn = document.getElementById("approveButton");
   bttn.addEventListener("click", async function () {
     var valorCajaTexto = document.getElementById("approveAmount").value;
     var value = BigNumber.from(`${valorCajaTexto}000000000000000000`);
-    await approveBusd(value, signer);
+    var tx = await approveBusd(value, signer);
+    console.log("Approve terminado");
   });
 
   var bttn = document.getElementById("purchaseGuineaPigButton");
@@ -46,6 +55,7 @@ function setUpListeners() {
   var bttn = document.getElementById("purchaseGuineaLndButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("purchaseGuineaLnd").value;
+    console.log("click", value);
     await purchaseLandWithBusd(value, signer);
   });
 

@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
-    "pachacuy-sc": "0.0.18"
+    "pachacuy-sc": "0.0.21"
   }
 }
