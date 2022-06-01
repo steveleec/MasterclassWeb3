@@ -3,15 +3,10 @@ import { BigNumber, Contract, providers, ethers } from "ethers";
 window.ethers = ethers;
 
 import {
-  initMarketplace,
-  listNftsOfAccount,
-  getListOfNftsForSale,
-} from "pachacuy-marketplace";
-
-import {
   getContract,
   getAllGameInformation,
   getInformationByRank,
+  getPriceInPcuy,
 } from "pachacuy-info";
 
 import {
@@ -19,15 +14,12 @@ import {
   approveBusd,
   allowance,
   // purchase
-  purchaseGuineaPigWithBusd,
   purchaseGuineaPigWithPcuy,
-  purchaseLandWithBusd,
   purchaseLandWithPcuy,
   purchasePachaPassWithPcuy,
-  purchasePachaPassWithBusd,
   // get NFT data
-  getGuineaPigData,
-  getLandData,
+  getGuineaPigWithUuid,
+  getPachaWithUuid,
   getPachaPassData,
   getWalletData,
   // helpers
@@ -38,13 +30,23 @@ import {
   tokenURI,
   signTatacuyTransaction,
   mintTatacuy,
-  mintWiracocha,
   // tatacuy
   signTatacuyTxAndVerify,
   finishTatacuyCampaign,
   startTatacuyCampaign,
   // wiracocha
+  mintWiracocha,
   signWiracochaTxAndReceivePcuy,
+  // rps
+  playRockPaperScissors,
+  updateFoodPriceAtChakra,
+  // misay wasi
+  startMisayWasiRaffle,
+  purchaseMisayWasi,
+  purchaseTicketFromMisayWasi,
+  // qhatu wasi
+  purchaseQhatuWasi,
+  startQhatuWasiCampaign,
 } from "pachacuy-sc";
 
 var provider, account, signer;
@@ -116,14 +118,14 @@ function setUpListeners() {
   var bttn = document.getElementById("purchaseGuineaPigButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("purchaseGuineaPig").value;
-    await purchaseGuineaPigWithBusd(value, signer);
+    await purchaseGuineaPigWithPcuy(value, signer);
   });
 
   var bttn = document.getElementById("purchaseGuineaLndButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("purchaseGuineaLnd").value;
     console.log("click", value);
-    await purchaseLandWithBusd(value, signer);
+    await purchaseLandWithPcuy(value, signer);
   });
 
   var bttn = document.getElementById("listOfNftButton");
@@ -136,14 +138,14 @@ function setUpListeners() {
   var bttn = document.getElementById("guineaPigDataButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("guineaPigData").value;
-    var data = await getGuineaPigData(value);
+    var data = await getGuineaPigWithUuid(value);
     console.log(data);
   });
 
   var bttn = document.getElementById("landDataButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("landData").value;
-    var landData = await getLandData(value);
+    var landData = await getPachaWithUuid(value);
     console.log(landData);
   });
 
@@ -169,19 +171,6 @@ function setUpListeners() {
     console.log(balance.toString());
   });
 
-  var bttn = document.getElementById("ListOfNftsButton");
-  bttn.addEventListener("click", async function () {
-    var value = document.getElementById("listOfNfts").value;
-    var res = await listNftsOfAccount(value);
-    console.log(res);
-  });
-
-  var bttn = document.getElementById("ListOfNftsForSale");
-  bttn.addEventListener("click", async function () {
-    var res = await getListOfNftsForSale();
-    console.log(res);
-  });
-
   var bttn = document.getElementById("MintTatacuy");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("mintTatacuyId").value;
@@ -189,47 +178,69 @@ function setUpListeners() {
     console.log(res);
   });
 
+  var bttn = document.getElementById("MintWiracocha");
+  bttn.addEventListener("click", async function () {
+    var value = document.getElementById("mintWiracochaId").value;
+    var res = await mintWiracocha(signer, value);
+    console.log(res);
+  });
+
   var bttn = document.getElementById("SignTatacuy");
   bttn.addEventListener("click", async function () {
     var guineaPigUuid = document.getElementById("signTatacuy0").value;
     var likelihood = document.getElementById("signTatacuy1").value;
-    var pachaOwner = document.getElementById("signTatacuy2").value;
-    var pachaUuid = document.getElementById("signTatacuy3").value;
+    var tatacuyUuid = document.getElementById("signTatacuy2").value;
+    var timpestampFront = document.getElementById("signTatacuy3").value;
+    /**
+     * _signer: SignerData,
+    _guineaPigUuid: number,
+    _likelihood: number,
+    _timeStampFront: number,
+    _tatacuyUuid: number,
+     */
     var res = await signTatacuyTxAndVerify(
       signer,
       guineaPigUuid,
       likelihood,
-      pachaOwner,
-      pachaUuid
+      timpestampFront,
+      tatacuyUuid
     );
     console.log(res);
   });
 
   var bttn = document.getElementById("SignWiracocha");
   bttn.addEventListener("click", async function () {
+    /**
+     * _signer: SignerData,
+     * _guineaPigUuid: number,
+     * _samiPoints: number,
+     * _pachaUuid: number,
+     * _timeStampFront: number,
+     * _wiracochaUuid: number
+     */
     var guineaPigUuid = document.getElementById("signWiracocha0").value;
     var samiPoints = document.getElementById("signWiracocha1").value;
-    var pachaOwner = document.getElementById("signWiracocha2").value;
+    var timestampFront = document.getElementById("signWiracocha2").value;
     var pachaUuid = document.getElementById("signWiracocha3").value;
+    var wiracochaUuid = document.getElementById("signWiracocha4").value;
     var res = await signWiracochaTxAndReceivePcuy(
       signer,
       guineaPigUuid,
       samiPoints,
-      pachaOwner,
-      pachaUuid
+      pachaUuid,
+      timestampFront,
+      wiracochaUuid
     );
     console.log(res);
   });
 
   var bttn = document.getElementById("StartTatacuyC");
   bttn.addEventListener("click", async function () {
-    var pachaUuid = document.getElementById("startttc1").value;
     var tatacuyUuid = document.getElementById("startttc2").value;
     var totalFunds = document.getElementById("startttc3").value;
     var prizePerWinner = document.getElementById("startttc4").value;
     var res = await startTatacuyCampaign(
       signer,
-      pachaUuid,
       tatacuyUuid,
       totalFunds,
       prizePerWinner
@@ -247,6 +258,74 @@ function setUpListeners() {
     console.log(samiPointsClaimed.toString());
     console.log(changeSamiPoints.toString());
   });
+
+  var bttn = document.getElementById("RPS");
+  bttn.addEventListener("click", async function () {
+    var op1 = document.getElementById("rps1").value;
+    var op2 = document.getElementById("rps2").value;
+    var res = await playRockPaperScissors(op1, op2);
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("GetPriceid");
+  bttn.addEventListener("click", async function () {
+    var type = document.getElementById("getPrice").value;
+    var res = await getPriceInPcuy(type);
+    console.log(res.toString());
+  });
+
+  var bttn = document.getElementById("purchaseMisayWasi");
+  bttn.addEventListener("click", async function () {
+    var price = document.getElementById("purchaseMisayWasiId").value;
+    var res = await purchaseMisayWasi(signer, price);
+    console.log(res);
+  });
+
+  /**
+   * _signer: Signer,
+   * _misayWasiUuid: number,
+   * _rafflePrize: number,
+   * _ticketPrice: number,
+   * _campaignEndDate: number,
+   */
+  var bttn = document.getElementById("startMisayW");
+  bttn.addEventListener("click", async function () {
+    var mswsUuid = document.getElementById("startMisayWId").value;
+    var prize = document.getElementById("startMisayWId2").value;
+    var ticketPrice = document.getElementById("startMisayWId3").value;
+    var endDate = document.getElementById("startMisayWId4").value;
+    var res = await startMisayWasiRaffle(
+      signer,
+      mswsUuid,
+      prize,
+      ticketPrice,
+      endDate
+    );
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("purchaseTicketMisayWasi");
+  bttn.addEventListener("click", async function () {
+    var mswsUuid = document.getElementById("ticketMSWS").value;
+    var tickets = document.getElementById("ticketMSWS2").value;
+    var res = await purchaseTicketFromMisayWasi(signer, mswsUuid, tickets);
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("purchaseQhatuWasi");
+  bttn.addEventListener("click", async function () {
+    var pachaUuid = document.getElementById("qhatuWasiId").value;
+    var res = await purchaseQhatuWasi(signer, pachaUuid);
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("startQhatuWasiCampaign");
+  bttn.addEventListener("click", async function () {
+    var qhatuWasiUuid = document.getElementById("startQW1").value;
+    var amountPcuy = document.getElementById("startQW2").value;
+    var res = await startQhatuWasiCampaign(signer, qhatuWasiUuid, amountPcuy);
+    console.log(res);
+  });
 }
 
 async function initSmartContracts() {
@@ -263,7 +342,6 @@ async function initSmartContracts() {
   var [NFT, PurhcaseContract, TatacuyContract, WiracochaContract] = init(
     window.ethereum
   );
-  console.log(WiracochaContract);
   WiracochaContract.on(
     "WiracochaExchange",
     (

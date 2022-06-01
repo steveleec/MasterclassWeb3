@@ -74,18 +74,7 @@
         <button id="balanceOfButton">GET</button>
     </div>
     </br>
-    <div>
-        <label for="ListOfNfts">Give ListOfNfts to SC:</label>
-        <input type="text" id="listOfNfts" name="account" placeholder="Wallet Address">
-        <button id="ListOfNftsButton">GET</button>
-    </div>
-    </br>
-    </br>
-    <div>
-        <label for="ListOfNftsForSale">ListOfNftsForSale to SC:</label>
-        <button id="ListOfNftsForSale">GET</button>
-    </div>
-    </br>
+
     </br>
     <div>
         <label for="MintTatacuy">Mint Tatacuy</label>
@@ -93,13 +82,32 @@
         <button id="MintTatacuy">GET</button>
     </div>
     </br>
+
+    </br>
+    <div>
+        <label for="MintWiracocha">Mint Wiracocha</label>
+        <input type="text" id="mintWiracochaId" name="pachaUuid" placeholder="pachaUuid">
+        <button id="MintWiracocha">Mint</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="StartTatacuyC">Start Tatacuy</label>
+        <input type="text" id="startttc2" name="tatacuyUuid" placeholder="tatacuyUuid">
+        <input type="text" id="startttc3" name="totalFunds" placeholder="total Funds Pcuy Deposited">
+        <input type="text" id="startttc4" name="prizerPerWinner" placeholder="prize Per Winner Pcuy">
+        <button id="StartTatacuyC">Start</button>
+    </div>
+    </br>
+
     </br>
     <div>
         <label for="SignTatacuy">Sign Tatacuy</label>
         <input type="text" id="signTatacuy0" name="guineaPigUuid" placeholder="guineaPigUuid">
         <input type="text" id="signTatacuy1" name="likelihood" placeholder="likelihood">
-        <input type="text" id="signTatacuy2" name="pachaOwner" placeholder="pachaOwner">
-        <input type="text" id="signTatacuy3" name="pachaUuid" placeholder="pachaUuid">
+        <input type="text" id="signTatacuy2" name="tatacuyId" placeholder="tatacuyId">
+        <input type="text" id="signTatacuy3" name="timpestampFront" placeholder="timpestampFront">
         <button id="SignTatacuy">GET</button>
     </div>
     </br>
@@ -108,20 +116,10 @@
         <label for="SignWiracocha">Sign Wiracocha</label>
         <input type="text" id="signWiracocha0" name="guineaPigUuid" placeholder="guineaPigUuid">
         <input type="text" id="signWiracocha1" name="samiPoints" placeholder="samiPoints">
-        <input type="text" id="signWiracocha2" name="pachaOwner" placeholder="pachaOwner">
+        <input type="text" id="signWiracocha2" name="timestampFront" placeholder="timestampFront">
         <input type="text" id="signWiracocha3" name="pachaUuid" placeholder="pachaUuid">
+        <input type="text" id="signWiracocha4" name="wiracochaUuid" placeholder="wiracochaUuid">
         <button id="SignWiracocha">GET</button>
-    </div>
-    </br>
-
-    </br>
-    <div>
-        <label for="StartTatacuyC">Start Tatacuy</label>
-        <input type="text" id="startttc1" name="pachaUuid" placeholder="pachaUuid">
-        <input type="text" id="startttc2" name="tatacuyUuid" placeholder="tatacuyUuid">
-        <input type="text" id="startttc3" name="totalFunds" placeholder="total Funds Pcuy Deposited">
-        <input type="text" id="startttc4" name="prizerPerWinner" placeholder="prize Per Winner Pcuy">
-        <button id="StartTatacuyC">Start</button>
     </div>
     </br>
 
@@ -132,6 +130,78 @@
         <button id="FinishTatacuyC">Finish</button>
     </div>
     </br>
+
+    </br>
+    <div>
+        <label for="RPS">Rock Paper Scissors</label>
+        <input type="text" id="rps1" name="rps" placeholder="player one op">
+        <input type="text" id="rps2" name="rps" placeholder="player two op">
+        <button id="RPS">Play</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="UpdateFoodFromChakra">Update Food</label>
+        <input type="text" id="updafoodID1" name="rps" placeholder="player one op">
+        <input type="text" id="rps2" name="rps" placeholder="player two op">
+        <button id="UpdateFoodFromChakra">Update Food price</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="GetPriceid">Get Price</label>
+        <input type="text" id="getPrice" name="getPrice" placeholder="business type">
+        <button id="GetPriceid">Get price</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="purchaseMisayWasi">Purchase Misay Wasi:</label>
+        <input placeholder="pacha uuid" type="text" id="purchaseMisayWasiId" name="purchaseMisayWasi">
+        <button id="purchaseMisayWasi">Purchase</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="startMisayW">Start Misay Wasi:</label>
+        <input placeholder="misay wasi uuid" type="text" id="startMisayWId" name="startMisayW">
+        <input placeholder="raffle prize" type="text" id="startMisayWId2" name="startMisayW2">
+        <input placeholder="ticket price" type="text" id="startMisayWId3" name="startMisayW3">
+        <input placeholder="end date timestamp" type="text" id="startMisayWId4" name="startMisayW4">
+        <button id="startMisayW">Start</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="purchaseTicketMisayWasi">Purchase Ticket Misay Wasi:</label>
+        <input placeholder="misay wasi uuid" type="text" id="ticketMSWS" name="purchaseTicketMisayWasi">
+        <input placeholder="amount tickets" type="text" id="ticketMSWS2" name="purchaseTicketMisayWasi">
+        <button id="purchaseTicketMisayWasi">Purchase</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="purchaseQhatuWasi">Purchase Qhatu Wasi:</label>
+        <input placeholder="pacha uuid" type="text" id="qhatuWasiId" name="purchaseQhatuWasi">
+        <button id="purchaseQhatuWasi">Purchase</button>
+    </div>
+    </br>
+
+    </br>
+    <div>
+        <label for="startQhatuWasiCampaign">Start Qhatu Wasi:</label>
+        <input placeholder="qhatu wasi uuid" type="text" id="startQW1" name="startQhatuWasiCampaign">
+        <input placeholder="amount PCUY" type="text" id="startQW2" name="startQhatuWasiCampaign">
+        <button id="startQhatuWasiCampaign">Start</button>
+    </div>
+    </br>
+
 </body>
 
 </html>
