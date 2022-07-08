@@ -1,4 +1,4 @@
-import { BigNumber, Contract, providers, ethers } from "ethers";
+import { BigNumber, Contract, providers, ethers, utils } from "ethers";
 
 window.ethers = ethers;
 
@@ -17,11 +17,13 @@ import {
   purchaseGuineaPigWithPcuy,
   purchaseLandWithPcuy,
   purchasePachaPassWithPcuy,
+  purchaseChakra,
   // get NFT data
   getGuineaPigWithUuid,
   getPachaWithUuid,
   getPachaPassData,
   getWalletData,
+  getComponentsInPacha,
   // helpers
   isGuineaPigAllowedInPacha,
   getListOfNftsPerAccount,
@@ -47,6 +49,10 @@ import {
   // qhatu wasi
   purchaseQhatuWasi,
   startQhatuWasiCampaign,
+  // pacha pass
+  purchasePachaPass,
+  // chakra
+  purchaseFoodFromChakra,
 } from "pachacuy-sc";
 
 var provider, account, signer;
@@ -85,6 +91,7 @@ const mail = {
 function setUpListeners() {
   var bttn = document.getElementById("connect");
   bttn.addEventListener("click", async function () {
+    console.log("clicking");
     if (window.ethereum) {
       [account] = await ethereum.request({
         method: "eth_requestAccounts",
@@ -118,7 +125,8 @@ function setUpListeners() {
   var bttn = document.getElementById("purchaseGuineaPigButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("purchaseGuineaPig").value;
-    await purchaseGuineaPigWithPcuy(value, signer);
+    var res = await purchaseGuineaPigWithPcuy(value, signer);
+    console.log("puchase", res);
   });
 
   var bttn = document.getElementById("purchaseGuineaLndButton");
@@ -159,7 +167,12 @@ function setUpListeners() {
   var bttn = document.getElementById("walletDataButton");
   bttn.addEventListener("click", async function () {
     var value = document.getElementById("walletData").value;
-    var walletData = await getWalletData(value);
+    var walletData;
+    try {
+      walletData = await getWalletData(value);
+    } catch (error) {
+      console.log("walletData", error);
+    }
     console.log(walletData);
   });
 
@@ -250,9 +263,9 @@ function setUpListeners() {
 
   var bttn = document.getElementById("FinishTatacuyC");
   bttn.addEventListener("click", async function () {
-    var pachaUuid = document.getElementById("finishttc").value;
+    var tatacuyUuid = document.getElementById("finishttc").value;
     var { tatacuyOwner, totalSamiPoints, samiPointsClaimed, changeSamiPoints } =
-      await finishTatacuyCampaign(signer, pachaUuid);
+      await finishTatacuyCampaign(signer, tatacuyUuid);
     console.log(tatacuyOwner);
     console.log(totalSamiPoints.toString());
     console.log(samiPointsClaimed.toString());
@@ -326,6 +339,47 @@ function setUpListeners() {
     var res = await startQhatuWasiCampaign(signer, qhatuWasiUuid, amountPcuy);
     console.log(res);
   });
+
+  var bttn = document.getElementById("updateFoodPriceAtChakra");
+  bttn.addEventListener("click", async function () {
+    var chakraUuid = document.getElementById("updateInputOne").value;
+    var pricePerFood = document.getElementById("updateInputTwo").value;
+    console.log(utils.parseEther(pricePerFood));
+    var res = await updateFoodPriceAtChakra(
+      signer,
+      chakraUuid,
+      utils.parseEther(pricePerFood)
+    );
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("purchaseChakra");
+  bttn.addEventListener("click", async function () {
+    var pachaUuid = document.getElementById("purchaseChakraInput").value;
+    var res = await purchaseChakra(signer, pachaUuid);
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("purchaseFoodFromChakra");
+  bttn.addEventListener("click", async function () {
+    var chakraUuid = document.getElementById("purchaseFood1").value;
+    var amountOfFood = document.getElementById("purchaseFood2").value;
+    var guineaPigUuid = document.getElementById("purchaseFood3").value;
+    var res = await purchaseFoodFromChakra(
+      signer,
+      chakraUuid,
+      amountOfFood,
+      guineaPigUuid
+    );
+    console.log(res);
+  });
+
+  var bttn = document.getElementById("cmpntsInPacha");
+  bttn.addEventListener("click", async function () {
+    var pachaUuid = document.getElementById("cmpntsInPachaInput").value;
+    var res = await getComponentsInPacha(pachaUuid);
+    console.log(res);
+  });
 }
 
 async function initSmartContracts() {
@@ -339,8 +393,92 @@ async function initSmartContracts() {
         hatunWasiContract,
       ];
    */
-  var [NFT, PurhcaseContract, TatacuyContract, WiracochaContract] = init(
-    window.ethereum
+  var [
+    NFT,
+    PurhcaseContract,
+    TatacuyContract,
+    WiracochaContract,
+    Chakra,
+    HatunWasi,
+    MisayWasi,
+    QhatuWasi,
+  ] = init(window.ethereum);
+  WiracochaContract.on(
+    "MintWiracocha",
+    (owner, wiracochaUuid, pachaUuid, creationDate) =>
+      console.log(owner, wiracochaUuid, pachaUuid, creationDate)
+  );
+  TatacuyContract.on(
+    "MintTatacuy",
+    (owner, tatacuyUuid, pachaUuid, creationDate) =>
+      console.log(owner, tatacuyUuid, pachaUuid, creationDate)
+  );
+  HatunWasi.on(
+    "MintHatunWasi",
+    (owner, hatunWasiUuid, pachaUuid, creationDate) =>
+      console.log(owner, hatunWasiUuid, pachaUuid, creationDate)
+  );
+
+  MisayWasi.on(
+    "PurchaseTicketFromMisayWasi",
+    (account, misayWasiUuid, pachaUuid, ticketPrice, amountOfTickets) =>
+      console.log(
+        account,
+        misayWasiUuid,
+        pachaUuid,
+        ticketPrice,
+        amountOfTickets
+      )
+  );
+  MisayWasi.on(
+    "PurchaseMisayWasi",
+    (account, misayWasiUuid, pachaUuid, creationDate, misayWasiPrice) =>
+      console.log(
+        account,
+        misayWasiUuid,
+        pachaUuid,
+        creationDate,
+        misayWasiPrice
+      )
+  );
+  Chakra.on(
+    "PurchaseChakra",
+    (owner, chakraUuid, pachaUuid, chakraPrice, creationDate) =>
+      console.log(owner, chakraUuid, pachaUuid, chakraPrice, creationDate)
+  );
+
+  PurhcaseContract.on(
+    "PurchaseFoodChakra",
+    (
+      chakraUuid,
+      amountOfFood,
+      availableFood,
+      chakraOwner,
+      pcuyReceived,
+      pcuyTaxed,
+      tax
+    ) =>
+      console.log(
+        chakraUuid,
+        amountOfFood,
+        availableFood,
+        chakraOwner,
+        pcuyReceived,
+        pcuyTaxed,
+        tax
+      )
+  );
+  PurhcaseContract.on(
+    "PurchasePachaPass",
+    (account, pachaUuid, pachaPassUuid, price, pcuyReceived, pcuyTaxed) =>
+      console.log(
+        account,
+        pachaUuid,
+        pachaPassUuid,
+        price,
+        pcuyReceived,
+        pcuyTaxed
+      )
   );
   WiracochaContract.on(
     "WiracochaExchange",
